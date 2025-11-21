@@ -30,7 +30,8 @@ function applyTheme(theme) {
     }
 
     // Після зміни теми оновлюємо кольори осей/легенди
-    refreshAllChartsColors();
+    // setTimeout щоб дати браузеру час застосувати CSS змінні
+    setTimeout(() => refreshAllChartsColors(), 50);
 }
 
 function initTheme() {

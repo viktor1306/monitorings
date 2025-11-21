@@ -189,7 +189,9 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .modal-controls {
@@ -236,4 +238,64 @@ body {
     font-size: 0.8rem;
     color: var(--text-color);
     opacity: 0.7;
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .header-bar {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+
+    .header-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .grid-container {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .card {
+        padding: 15px;
+    }
+
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .btn-details {
+        width: 100%;
+    }
+
+    .modal-content {
+        width: 98%;
+        height: 95%;
+        padding: 15px;
+    }
+
+    .modal-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .modal-controls {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+    }
 }
