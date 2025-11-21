@@ -362,7 +362,7 @@ function updateDetailChart() {
                     zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
                 },
                 legend: {
-                    labels: { color: getComputedStyle(document.body).color, usePointStyle: true, padding: 30, boxWidth: 10 },
+                    labels: { color: getComputedStyle(document.body).color, usePointStyle: true, padding: 100, boxWidth: 10 },
                     position: 'top', align: 'start'
                 }
             },
