@@ -3,6 +3,46 @@ let currentStation = null;
 let detailChart = null;
 let miniChartsMap = {};
 
+// --- ТЕМА (світла/темна) ---
+const THEME_KEY = 'bess-theme';
+
+function applyTheme(theme) {
+    const root = document.documentElement;
+    const btn = document.getElementById('themeToggle');
+
+    if (theme === 'light') {
+        root.style.setProperty('--bg-color', '#f5f6fa');
+        root.style.setProperty('--card-bg', '#ffffff');
+        root.style.setProperty('--text-color', '#1e1e2f');
+        root.style.setProperty('--border-color', '#dcdde1');
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+    } else {
+        root.style.setProperty('--bg-color', '#1e1e2f');
+        root.style.setProperty('--card-bg', '#27293d');
+        root.style.setProperty('--text-color', '#e0e0e0');
+        root.style.setProperty('--border-color', '#3c3f58');
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-moon"></i>';
+        }
+    }
+}
+
+function initTheme() {
+    const saved = localStorage.getItem(THEME_KEY) || 'dark';
+    applyTheme(saved);
+    const btn = document.getElementById('themeToggle');
+    if (btn) {
+        btn.addEventListener('click', () => {
+            const current = localStorage.getItem(THEME_KEY) || 'dark';
+            const next = current === 'dark' ? 'light' : 'dark';
+            localStorage.setItem(THEME_KEY, next);
+            applyTheme(next);
+        });
+    }
+}
+
 const vibrantColors = [
     '#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#00d2d3',
     '#5f27cd', '#c8d6e5', '#1dd1a1', '#ff6b81', '#f368e0', '#0abde3'
@@ -15,7 +55,10 @@ const metricConfig = {
 };
 
 // --- АВТОМАТИЧНИЙ ЗАПУСК ПРИ ЗАВАНТАЖЕННІ СТОРІНКИ ---
-document.addEventListener('DOMContentLoaded', autoLoadData);
+document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
+    autoLoadData();
+});
 
 // Event Listeners
 document.querySelector('.close-modal').addEventListener('click', () => document.getElementById('detailModal').style.display = 'none');
@@ -154,7 +197,14 @@ function createMiniChart(stationName, canvasId, metric) {
             maintainAspectRatio: false,
             plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
             scales: {
-                x: { type: 'time', display: false },
+                x: {
+                    type: 'time',
+                    display: false,
+                    time: {
+                        unit: 'hour',
+                        displayFormats: { hour: 'dd.MM HH:mm' }
+                    }
+                },
                 y: {
                     grid: { color: '#3c3f58' },
                     ticks: { color: '#aaa', maxTicksLimit: 5 }

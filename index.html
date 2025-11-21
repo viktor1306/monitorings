@@ -24,8 +24,13 @@
 
     <div class="header-bar">
         <h2 style="margin:0;"><i class="fas fa-chart-line" style="color: var(--accent-blue);"></i> Аналітика BESS</h2>
-        <div id="loadingStatus" class="loading-spinner">
-            <i class="fas fa-spinner fa-spin"></i> Завантаження даних...
+        <div class="header-right">
+            <div id="loadingStatus" class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i> Завантаження даних...
+            </div>
+            <button id="themeToggle" class="theme-toggle" title="Перемкнути тему">
+                <i class="fas fa-moon"></i>
+            </button>
         </div>
     </div>
 
@@ -45,10 +50,6 @@
                         <option value="min">Мінімальний SoC (Min)</option>
                         <option value="max">Максимальний SoC (Max)</option>
                     </select>
-
-                    <button class="btn-reset-zoom" onclick="resetZoom()" title="Скинути зум">
-                        <i class="fas fa-undo"></i>
-                    </button>
                 </div>
 
                 <span class="close-modal">&times;</span>
