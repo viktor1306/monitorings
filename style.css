@@ -90,7 +90,7 @@ body {
 .card-title {
     font-size: 1.3rem;
     font-weight: bold;
-    color: white;
+    color: var(--text-color);
 }
 
 .btn-details {
@@ -124,9 +124,9 @@ body {
 }
 
 .card-select {
-    background: #1e1e2f;
-    color: #aaa;
-    border: 1px solid #555;
+    background: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
     padding: 5px 10px;
     border-radius: 4px;
     font-size: 0.85rem;
@@ -136,7 +136,7 @@ body {
 
 .card-select:hover {
     border-color: var(--accent-blue);
-    color: white;
+    color: var(--text-color);
 }
 
 .modal-select {
@@ -199,13 +199,13 @@ body {
 
 .close-modal {
     font-size: 2rem;
-    color: #888;
+    color: var(--text-color);
     cursor: pointer;
     line-height: 1;
 }
 
 .close-modal:hover {
-    color: white;
+    color: var(--accent-blue);
 }
 
 .chart-wrapper {
