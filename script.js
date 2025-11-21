@@ -30,8 +30,10 @@ function applyTheme(theme) {
     }
 
     // Після зміни теми оновлюємо кольори осей/легенди
-    // setTimeout щоб дати браузеру час застосувати CSS змінні
-    setTimeout(() => refreshAllChartsColors(), 50);
+    // requestAnimationFrame щоб дочекатись перемальовування DOM
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => refreshAllChartsColors());
+    });
 }
 
 function initTheme() {
@@ -360,7 +362,7 @@ function updateDetailChart() {
                     zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
                 },
                 legend: {
-                    labels: { color: getComputedStyle(document.body).color, usePointStyle: true, padding: 20, boxWidth: 10 },
+                    labels: { color: getComputedStyle(document.body).color, usePointStyle: true, padding: 30, boxWidth: 10 },
                     position: 'top', align: 'start'
                 }
             },
