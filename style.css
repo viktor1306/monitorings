@@ -41,18 +41,54 @@ body {
     gap: 15px;
 }
 
-.color-picker-container {
+.color-picker-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.color-picker-btn {
+    background: transparent;
+    border: 1px solid var(--accent-blue);
+    color: var(--accent-blue);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
     display: flex;
-    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.color-picker-btn:hover {
+    background: var(--accent-blue);
+    color: #ffffff;
+}
+
+.color-picker-menu {
+    display: none;
+    position: absolute;
+    top: 45px;
+    right: 0;
     background: var(--card-bg);
-    padding: 5px 10px;
-    border-radius: 20px;
     border: 1px solid var(--border-color);
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    z-index: 100;
+    flex-direction: row;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.color-picker-menu.show {
+    display: flex;
 }
 
 .color-option {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;

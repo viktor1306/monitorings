@@ -53,8 +53,24 @@ function getCurrentColor() {
 }
 
 function initColorPicker() {
+    const btn = document.getElementById('colorPickerBtn');
+    const menu = document.getElementById('colorPickerMenu');
     const options = document.querySelectorAll('.color-option');
-    if (!options.length) return;
+
+    if (!btn || !menu) return;
+
+    // Toggle menu
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        menu.classList.toggle('show');
+    });
+
+    // Close menu when clicking outside
+    window.addEventListener('click', (e) => {
+        if (!menu.contains(e.target) && e.target !== btn) {
+            menu.classList.remove('show');
+        }
+    });
 
     const savedColor = getCurrentColor();
 
@@ -75,6 +91,9 @@ function initColorPicker() {
 
             // Оновити всі міні-графіки
             refreshAllChartsColors();
+            
+            // Закрити меню після вибору
+            menu.classList.remove('show');
         });
     });
 }
@@ -279,7 +298,8 @@ function createMiniChart(stationName, canvasId, metric) {
                     display: false,
                     time: {
                         unit: 'hour',
-                        displayFormats: { hour: 'dd.MM HH:mm' }
+                        displayFormats: { hour: 'HH:mm' },
+                        tooltipFormat: 'dd.MM HH:mm'
                     }
                 },
                 y: {
@@ -374,7 +394,7 @@ function updateDetailChart() {
             },
             layout: {
                 padding: {
-                    top: 30
+                    top: 50
                 }
             },
             scales: {
