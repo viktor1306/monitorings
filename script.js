@@ -53,23 +53,29 @@ function getCurrentColor() {
 }
 
 function initColorPicker() {
-    const select = document.getElementById('colorSelect');
-    if (!select) return;
+    const options = document.querySelectorAll('.color-option');
+    if (!options.length) return;
 
     const savedColor = getCurrentColor();
-    // Виставляємо значення селекта, якщо воно є в списку
-    Array.from(select.options).forEach(opt => {
-        if (opt.value.toLowerCase() === savedColor.toLowerCase()) {
-            select.value = opt.value;
+
+    // Ініціалізація активного класу
+    options.forEach(opt => {
+        if (opt.dataset.color.toLowerCase() === savedColor.toLowerCase()) {
+            opt.classList.add('active');
         }
-    });
+        
+        opt.addEventListener('click', () => {
+            // Зняти активність з усіх
+            options.forEach(o => o.classList.remove('active'));
+            // Додати активність поточному
+            opt.classList.add('active');
 
-    select.addEventListener('change', () => {
-        const newColor = select.value;
-        localStorage.setItem(COLOR_KEY, newColor);
+            const newColor = opt.dataset.color;
+            localStorage.setItem(COLOR_KEY, newColor);
 
-        // Оновити всі міні-графіки під новий колір поточної метрики
-        refreshAllChartsColors();
+            // Оновити всі міні-графіки
+            refreshAllChartsColors();
+        });
     });
 }
 
@@ -362,8 +368,13 @@ function updateDetailChart() {
                     zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
                 },
                 legend: {
-                    labels: { color: getComputedStyle(document.body).color, usePointStyle: true, padding: 30, boxWidth: 10 },
+                    labels: { color: getComputedStyle(document.body).color, usePointStyle: true, padding: 20, boxWidth: 10 },
                     position: 'top', align: 'start'
+                }
+            },
+            layout: {
+                padding: {
+                    top: 30
                 }
             },
             scales: {

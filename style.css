@@ -41,19 +41,31 @@ body {
     gap: 15px;
 }
 
-.chart-color-select {
+.color-picker-container {
+    display: flex;
+    gap: 8px;
     background: var(--card-bg);
-    color: var(--text-color);
+    padding: 5px 10px;
+    border-radius: 20px;
     border: 1px solid var(--border-color);
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    outline: none;
-    cursor: pointer;
 }
 
-.chart-color-select:hover {
-    border-color: var(--accent-blue);
+.color-option {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 2px solid transparent;
+}
+
+.color-option:hover {
+    transform: scale(1.2);
+}
+
+.color-option.active {
+    border-color: var(--text-color);
+    box-shadow: 0 0 8px rgba(0,0,0,0.3);
 }
 
 .theme-toggle {
