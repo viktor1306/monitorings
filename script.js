@@ -30,10 +30,8 @@ function applyTheme(theme) {
     }
 
     // Після зміни теми оновлюємо кольори осей/легенди
-    // requestAnimationFrame щоб дочекатись перемальовування DOM
-    requestAnimationFrame(() => {
-        requestAnimationFrame(() => refreshAllChartsColors());
-    });
+    // setTimeout щоб дати браузеру час застосувати CSS змінні
+    setTimeout(() => refreshAllChartsColors(), 50);
 }
 
 function initTheme() {
@@ -77,7 +75,9 @@ function initColorPicker() {
 
 function refreshAllChartsColors() {
     const baseColor = getCurrentColor();
-    const textColor = getComputedStyle(document.body).color;
+    // Примусово беремо колір з CSS змінної, а не з computed style, бо computed може запізнюватись
+    const isLight = document.documentElement.style.getPropertyValue('--bg-color') === '#f5f6fa';
+    const textColor = isLight ? '#1e1e2f' : '#e0e0e0';
 
     // Міні-графіки
     Object.keys(miniChartsMap).forEach(st => {
@@ -362,7 +362,7 @@ function updateDetailChart() {
                     zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
                 },
                 legend: {
-                    labels: { color: getComputedStyle(document.body).color, usePointStyle: true, padding: 100, boxWidth: 10 },
+                    labels: { color: getComputedStyle(document.body).color, usePointStyle: true, padding: 30, boxWidth: 10 },
                     position: 'top', align: 'start'
                 }
             },
