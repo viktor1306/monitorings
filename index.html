@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BESS Monitor Ultimate</title>
+
+    <!-- Chart.js та плагіни -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.1/chartjs-plugin-zoom.min.js"></script>
+
+    <!-- Іконки -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Наші стилі -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="header-bar">
+        <h2 style="margin:0;"><i class="fas fa-chart-line" style="color: var(--accent-blue);"></i> Аналітика BESS</h2>
+        <div id="loadingStatus" class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i> Завантаження даних...
+        </div>
+    </div>
+
+    <div id="dashboardGrid" class="grid-container">
+        <!-- Картки додаються автоматично через JS -->
+    </div>
+
+    <!-- MODAL -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle" style="margin:0;">Деталі</h2>
+
+                <div class="modal-controls">
+                    <select id="modalMetricSelect" class="card-select modal-select">
+                        <option value="diff">Різниця комірок (Diff)</option>
+                        <option value="min">Мінімальний SoC (Min)</option>
+                        <option value="max">Максимальний SoC (Max)</option>
+                    </select>
+
+                    <button class="btn-reset-zoom" onclick="resetZoom()" title="Скинути зум">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                </div>
+
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="detailChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Наш скрипт -->
+    <script src="script.js"></script>
+</body>
+
+</html>
