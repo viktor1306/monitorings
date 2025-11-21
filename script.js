@@ -290,7 +290,7 @@ function updateDetailChart() {
                     zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
                 },
                 legend: {
-                    labels: { color: '#e0e0e0', usePointStyle: true, padding: 20, boxWidth: 10 },
+                    labels: { color: getComputedStyle(document.body).color, usePointStyle: true, padding: 20, boxWidth: 10 },
                     position: 'top', align: 'start'
                 }
             },
@@ -299,12 +299,12 @@ function updateDetailChart() {
                     type: 'time',
                     time: { tooltipFormat: 'dd.MM HH:mm', displayFormats: { hour: 'dd.MM HH:mm' } },
                     grid: { color: '#3c3f58' },
-                    ticks: { color: '#aaa', maxTicksLimit: 10, maxRotation: 0, autoSkip: true }
+                    ticks: { color: getComputedStyle(document.body).color, maxTicksLimit: 10, maxRotation: 0, autoSkip: true }
                 },
                 y: {
                     grid: { color: '#3c3f58' },
-                    ticks: { color: '#aaa' },
-                    title: { display: true, text: metricConfig[metric].label, color: '#666' }
+                    ticks: { color: getComputedStyle(document.body).color },
+                    title: { display: true, text: metricConfig[metric].label, color: getComputedStyle(document.body).color }
                 }
             }
         }
