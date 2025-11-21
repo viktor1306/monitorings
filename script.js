@@ -392,11 +392,6 @@ function updateDetailChart() {
                     position: 'top', align: 'start'
                 }
             },
-            layout: {
-                padding: {
-                    top: 50
-                }
-            },
             scales: {
                 x: {
                     type: 'time',
