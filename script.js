@@ -5,6 +5,7 @@ let miniChartsMap = {};
 
 // --- ТЕМА (світла/темна) ---
 const THEME_KEY = 'bess-theme';
+const COLOR_KEY = 'bess-color';
 
 function applyTheme(theme) {
     const root = document.documentElement;
@@ -43,6 +44,38 @@ function initTheme() {
     }
 }
 
+function getCurrentColor() {
+    return localStorage.getItem(COLOR_KEY) || metricConfig['diff'].color;
+}
+
+function initColorPicker() {
+    const select = document.getElementById('colorSelect');
+    if (!select) return;
+
+    const savedColor = getCurrentColor();
+    // Виставляємо значення селекта, якщо воно є в списку
+    Array.from(select.options).forEach(opt => {
+        if (opt.value.toLowerCase() === savedColor.toLowerCase()) {
+            select.value = opt.value;
+        }
+    });
+
+    select.addEventListener('change', () => {
+        const newColor = select.value;
+        localStorage.setItem(COLOR_KEY, newColor);
+
+        // Оновити всі міні-графіки під новий колір поточної метрики
+        Object.keys(miniChartsMap).forEach(st => {
+            const obj = miniChartsMap[st];
+            if (!obj) return;
+            const chart = obj.chart;
+            chart.data.datasets[0].borderColor = newColor;
+            chart.data.datasets[0].backgroundColor = newColor + '20';
+            chart.update();
+        });
+    });
+}
+
 const vibrantColors = [
     '#ff6b6b', '#feca57', '#48dbfb', '#ff9ff3', '#54a0ff', '#00d2d3',
     '#5f27cd', '#c8d6e5', '#1dd1a1', '#ff6b81', '#f368e0', '#0abde3'
@@ -57,6 +90,7 @@ const metricConfig = {
 // --- АВТОМАТИЧНИЙ ЗАПУСК ПРИ ЗАВАНТАЖЕННІ СТОРІНКИ ---
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
+    initColorPicker();
     autoLoadData();
 });
 
@@ -178,13 +212,16 @@ function createMiniChart(stationName, canvasId, metric) {
     const dataPoints = calculateAvgTrend(stationName, metric);
     const conf = metricConfig[metric];
 
+    const textColor = getComputedStyle(document.body).color;
+    const baseColor = getCurrentColor();
+
     const chart = new Chart(ctx, {
         type: 'line',
         data: {
             datasets: [{
                 data: dataPoints,
-                borderColor: conf.color,
-                backgroundColor: conf.color + '20',
+                borderColor: baseColor,
+                backgroundColor: baseColor + '20',
                 borderWidth: 2,
                 pointRadius: 0,
                 pointHoverRadius: 4,
@@ -207,7 +244,7 @@ function createMiniChart(stationName, canvasId, metric) {
                 },
                 y: {
                     grid: { color: '#3c3f58' },
-                    ticks: { color: '#aaa', maxTicksLimit: 5 }
+                    ticks: { color: textColor, maxTicksLimit: 5 }
                 }
             }
         }
@@ -221,9 +258,10 @@ window.updateSingleCardChart = function (stationName, metric) {
     const chart = obj.chart;
     const newData = calculateAvgTrend(stationName, metric);
     const conf = metricConfig[metric];
+    const baseColor = getCurrentColor();
     chart.data.datasets[0].data = newData;
-    chart.data.datasets[0].borderColor = conf.color;
-    chart.data.datasets[0].backgroundColor = conf.color + '20';
+    chart.data.datasets[0].borderColor = baseColor;
+    chart.data.datasets[0].backgroundColor = baseColor + '20';
     chart.update();
 }
 

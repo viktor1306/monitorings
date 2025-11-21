@@ -41,6 +41,21 @@ body {
     gap: 15px;
 }
 
+.chart-color-select {
+    background: var(--card-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    outline: none;
+    cursor: pointer;
+}
+
+.chart-color-select:hover {
+    border-color: var(--accent-blue);
+}
+
 .theme-toggle {
     background: transparent;
     border: 1px solid var(--accent-blue);
