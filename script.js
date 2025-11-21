@@ -28,6 +28,9 @@ function applyTheme(theme) {
             btn.innerHTML = '<i class="fas fa-moon"></i>';
         }
     }
+
+    // Після зміни теми оновлюємо кольори осей/легенди
+    refreshAllChartsColors();
 }
 
 function initTheme() {
@@ -65,15 +68,43 @@ function initColorPicker() {
         localStorage.setItem(COLOR_KEY, newColor);
 
         // Оновити всі міні-графіки під новий колір поточної метрики
-        Object.keys(miniChartsMap).forEach(st => {
-            const obj = miniChartsMap[st];
-            if (!obj) return;
-            const chart = obj.chart;
-            chart.data.datasets[0].borderColor = newColor;
-            chart.data.datasets[0].backgroundColor = newColor + '20';
-            chart.update();
-        });
+        refreshAllChartsColors();
     });
+}
+
+function refreshAllChartsColors() {
+    const baseColor = getCurrentColor();
+    const textColor = getComputedStyle(document.body).color;
+
+    // Міні-графіки
+    Object.keys(miniChartsMap).forEach(st => {
+        const obj = miniChartsMap[st];
+        if (!obj) return;
+        const chart = obj.chart;
+        chart.data.datasets[0].borderColor = baseColor;
+        chart.data.datasets[0].backgroundColor = baseColor + '20';
+        if (chart.options && chart.options.scales && chart.options.scales.y && chart.options.scales.y.ticks) {
+            chart.options.scales.y.ticks.color = textColor;
+        }
+        chart.update();
+    });
+
+    // Детальний графік
+    if (detailChart && detailChart.options && detailChart.options.scales) {
+        if (detailChart.options.plugins && detailChart.options.plugins.legend && detailChart.options.plugins.legend.labels) {
+            detailChart.options.plugins.legend.labels.color = textColor;
+        }
+        if (detailChart.options.scales.x && detailChart.options.scales.x.ticks) {
+            detailChart.options.scales.x.ticks.color = textColor;
+        }
+        if (detailChart.options.scales.y && detailChart.options.scales.y.ticks) {
+            detailChart.options.scales.y.ticks.color = textColor;
+        }
+        if (detailChart.options.scales.y && detailChart.options.scales.y.title) {
+            detailChart.options.scales.y.title.color = textColor;
+        }
+        detailChart.update();
+    }
 }
 
 const vibrantColors = [
