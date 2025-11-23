@@ -161,7 +161,8 @@ window.onclick = (e) => { if (e.target == document.getElementById('detailModal')
 async function autoLoadData() {
     try {
         // 1. Зчитуємо список файлів
-        const response = await fetch('files.json');
+        // Додаємо timestamp для уникнення кешування
+        const response = await fetch('files.json?t=' + new Date().getTime());
         if (!response.ok) throw new Error('Не вдалося знайти files.json');
 
         const fileList = await response.json();
@@ -195,7 +196,8 @@ async function autoLoadData() {
 
 async function loadCsvFile(filename) {
     try {
-        const res = await fetch(`csv/${filename}`);
+        // Додаємо timestamp для уникнення кешування
+        const res = await fetch(`csv/${filename}?t=` + new Date().getTime());
         const text = await res.text();
 
         // Парсинг дати з назви файлу
