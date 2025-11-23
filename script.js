@@ -172,6 +172,8 @@ async function autoLoadData() {
             return;
         }
 
+        updateLastUpdatedTime(fileList);
+
         // 2. Завантажуємо кожен файл зі списку
         const promises = fileList.map(filename => loadCsvFile(filename));
         await Promise.all(promises);
@@ -409,4 +411,33 @@ function updateDetailChart() {
             }
         }
     });
+}
+
+// --- LAST UPDATED TIME LOGIC ---
+
+function updateLastUpdatedTime(fileList) {
+    let maxDate = 0;
+    let maxDateStr = '';
+
+    fileList.forEach(filename => {
+        // Regex to parse: 1. Моніторинг Раків - 18.11.2025 12_58.csv
+        const match = filename.match(/(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2})_(\d{2})/);
+        if (match) {
+            const d = new Date(match[3], match[2] - 1, match[1], match[4], match[5]);
+            if (d.getTime() > maxDate) {
+                maxDate = d.getTime();
+                // Format for display: 18.11.2025 12:58
+                maxDateStr = `${match[1]}.${match[2]}.${match[3]} ${match[4]}:${match[5]}`;
+            }
+        }
+    });
+
+    if (maxDateStr) {
+        const badge = document.getElementById('lastUpdated');
+        const timeSpan = document.getElementById('lastUpdatedTime');
+        if (badge && timeSpan) {
+            timeSpan.innerText = maxDateStr;
+            badge.style.display = 'flex';
+        }
+    }
 }
