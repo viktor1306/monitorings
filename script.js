@@ -143,7 +143,8 @@ const vibrantColors = [
 const metricConfig = {
     'diff': { label: 'Середня Різниця (%)', color: '#ff9f43' },
     'min': { label: 'Середній Мінімум (%)', color: '#ff5252' },
-    'max': { label: 'Середній Максимум (%)', color: '#00d2d3' }
+    'max': { label: 'Середній Максимум (%)', color: '#00d2d3' },
+    'soc': { label: 'Середній SoC (%)', color: '#54a0ff' }
 };
 
 // --- АВТОМАТИЧНИЙ ЗАПУСК ПРИ ЗАВАНТАЖЕННІ СТОРІНКИ ---
@@ -231,12 +232,24 @@ function parseCSV(text, date) {
         const min = parseFloat(cols[cols.length - 2]);
         const max = parseFloat(cols[cols.length - 3]);
 
+        // Розрахунок середнього SoC (стовпці D:I, тобто індекси 3..length-4)
+        let socSum = 0;
+        let socCount = 0;
+        for (let k = 3; k < cols.length - 3; k++) {
+            const val = parseFloat(cols[k]);
+            if (!isNaN(val)) {
+                socSum += val;
+                socCount++;
+            }
+        }
+        const soc = socCount > 0 ? socSum / socCount : 0;
+
         if (!st || !inv || isNaN(max)) continue;
 
         if (!allData[st]) allData[st] = { inverters: {} };
         if (!allData[st].inverters[inv]) allData[st].inverters[inv] = [];
 
-        allData[st].inverters[inv].push({ timestamp: date, min, max, diff });
+        allData[st].inverters[inv].push({ timestamp: date, min, max, diff, soc });
     }
 }
 
