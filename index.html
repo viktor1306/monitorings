@@ -8,17 +8,16 @@
 
     <link rel="icon" type="image/png" href="img/logo_dark.png">
 
-    <!-- Chart.js та плагіни -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script
         src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.1/chartjs-plugin-zoom.min.js"></script>
+    <!-- SortableJS для Drag & Drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
-    <!-- Іконки -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Наші стилі -->
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -30,6 +29,13 @@
             <div id="lastUpdated" class="last-updated-badge" style="display: none;">
                 <i class="fas fa-clock"></i> Оновлено: <span id="lastUpdatedTime"></span>
             </div>
+            <button id="statsBtn" class="header-btn" title="Статистика">
+                <i class="fas fa-chart-pie"></i>
+            </button>
+            <button id="alertsBtn" class="header-btn" title="Історія алертів">
+                <i class="fas fa-bell"></i>
+                <span id="alertsBadge" class="alerts-badge" style="display:none;">0</span>
+            </button>
             <div id="loadingStatus" class="loading-spinner">
                 <i class="fas fa-spinner fa-spin"></i> Завантаження даних...
             </div>
@@ -52,14 +58,14 @@
     </div>
 
     <div id="dashboardGrid" class="grid-container">
-        <!-- Картки додаються автоматично через JS -->
+
     </div>
 
     <footer class="page-footer">
         Створено відділом агрегації KNESS Energy
     </footer>
 
-    <!-- MODAL -->
+    <!-- DETAIL MODAL -->
     <div id="detailModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -82,7 +88,55 @@
         </div>
     </div>
 
-    <!-- Наш скрипт -->
+    <!-- STATISTICS MODAL -->
+    <div id="statsModal" class="modal">
+        <div class="modal-content stats-modal-content">
+            <div class="modal-header">
+                <h2 style="margin:0;"><i class="fas fa-chart-pie" style="color: var(--accent-blue);"></i> Статистика</h2>
+                <span class="close-modal close-stats">&times;</span>
+            </div>
+            <div class="stats-content">
+                <div class="stats-section">
+                    <h3>Загальна статистика за весь період</h3>
+                    <div id="overallStats" class="stats-grid"></div>
+                </div>
+                <div class="stats-section">
+                    <h3>Статистика по станціях</h3>
+                    <select id="statsStationSelect" class="card-select modal-select">
+                        <option value="">-- Оберіть станцію --</option>
+                    </select>
+                    <div id="stationStats" class="stats-grid" style="margin-top:15px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ALERTS MODAL -->
+    <div id="alertsModal" class="modal">
+        <div class="modal-content alerts-modal-content">
+            <div class="modal-header">
+                <h2 style="margin:0;"><i class="fas fa-bell" style="color: var(--accent-blue);"></i> Історія алертів</h2>
+                <span class="close-modal close-alerts">&times;</span>
+            </div>
+            <div class="alerts-content">
+                <div class="alerts-tabs">
+                    <button class="alert-tab active" data-tab="all">Всі УЗЕ</button>
+                    <button class="alert-tab" data-tab="station">По станції</button>
+                </div>
+                <div class="alerts-filters">
+                    <select id="alertsStationSelect" class="card-select" style="display:none;">
+                        <option value="">-- Оберіть станцію --</option>
+                    </select>
+                    <select id="alertsThreshold" class="card-select">
+                        <option value="5">Різниця ≥ 5%</option>
+                        <option value="10">Різниця ≥ 10%</option>
+                    </select>
+                </div>
+                <div id="alertsList" class="alerts-list"></div>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 

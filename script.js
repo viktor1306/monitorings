@@ -2,10 +2,12 @@ let allData = {};
 let currentStation = null;
 let detailChart = null;
 let miniChartsMap = {};
+let sortableInstance = null;
 
-// --- ТЕМА (світла/темна) ---
+// --- КОНСТАНТИ ---
 const THEME_KEY = 'bess-theme';
 const COLOR_KEY = 'bess-color';
+const CARD_ORDER_KEY = 'bess-card-order';
 
 function applyTheme(theme) {
     const root = document.documentElement;
@@ -151,18 +153,47 @@ const metricConfig = {
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     initColorPicker();
+    initModals();
     autoLoadData();
 });
 
 // Event Listeners
 document.querySelector('.close-modal').addEventListener('click', () => document.getElementById('detailModal').style.display = 'none');
 document.getElementById('modalMetricSelect').addEventListener('change', updateDetailChart);
-window.onclick = (e) => { if (e.target == document.getElementById('detailModal')) document.getElementById('detailModal').style.display = 'none'; }
+window.onclick = (e) => { 
+    if (e.target == document.getElementById('detailModal')) document.getElementById('detailModal').style.display = 'none';
+    if (e.target == document.getElementById('statsModal')) document.getElementById('statsModal').style.display = 'none';
+    if (e.target == document.getElementById('alertsModal')) document.getElementById('alertsModal').style.display = 'none';
+}
+
+function initModals() {
+    // Stats Modal
+    document.getElementById('statsBtn').addEventListener('click', openStatsModal);
+    document.querySelector('.close-stats').addEventListener('click', () => document.getElementById('statsModal').style.display = 'none');
+    document.getElementById('statsStationSelect').addEventListener('change', updateStationStats);
+    
+    // Alerts Modal
+    document.getElementById('alertsBtn').addEventListener('click', openAlertsModal);
+    document.querySelector('.close-alerts').addEventListener('click', () => document.getElementById('alertsModal').style.display = 'none');
+    document.getElementById('alertsThreshold').addEventListener('change', updateAlertsList);
+    document.getElementById('alertsStationSelect').addEventListener('change', updateAlertsList);
+    
+    // Alert tabs
+    document.querySelectorAll('.alert-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.alert-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            const tabType = tab.dataset.tab;
+            const stationSelect = document.getElementById('alertsStationSelect');
+            stationSelect.style.display = tabType === 'station' ? 'block' : 'none';
+            updateAlertsList();
+        });
+    });
+}
 
 async function autoLoadData() {
     try {
-        // 1. Зчитуємо список файлів
-        // Додаємо timestamp для уникнення кешування
+    
         const response = await fetch('files.json?t=' + new Date().getTime());
         if (!response.ok) throw new Error('Не вдалося знайти files.json');
 
@@ -175,18 +206,15 @@ async function autoLoadData() {
 
         updateLastUpdatedTime(fileList);
 
-        // 2. Завантажуємо кожен файл зі списку
         const promises = fileList.map(filename => loadCsvFile(filename));
         await Promise.all(promises);
 
-        // 3. Сортування
         for (let st in allData) {
             for (let inv in allData[st].inverters) {
                 allData[st].inverters[inv].sort((a, b) => a.timestamp - b.timestamp);
             }
         }
 
-        // 4. Приховуємо спіннер і малюємо дашборд
         document.getElementById('loadingStatus').style.display = 'none';
         initDashboard();
 
@@ -199,13 +227,10 @@ async function autoLoadData() {
 
 async function loadCsvFile(filename) {
     try {
-        // Додаємо timestamp для уникнення кешування
         const res = await fetch(`csv/${filename}?t=` + new Date().getTime());
         const text = await res.text();
 
-        // Парсинг дати з назви файлу
         const dateMatch = filename.match(/(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2})_(\d{2})/);
-        // Якщо дата є в назві - беремо її, інакше поточну (але краще щоб була в назві)
         let date = new Date();
         if (dateMatch) {
             date = new Date(dateMatch[3], dateMatch[2] - 1, dateMatch[1], dateMatch[4], dateMatch[5]);
@@ -232,7 +257,6 @@ function parseCSV(text, date) {
         const min = parseFloat(cols[cols.length - 2]);
         const max = parseFloat(cols[cols.length - 3]);
 
-        // Розрахунок середнього SoC (стовпці D:I, тобто індекси 3..length-4)
         let socSum = 0;
         let socCount = 0;
         for (let k = 3; k < cols.length - 3; k++) {
@@ -257,11 +281,40 @@ function initDashboard() {
     const container = document.getElementById('dashboardGrid');
     container.innerHTML = '';
 
-    const stations = Object.keys(allData).sort();
+    let stations = Object.keys(allData).sort();
+    
+    // Відновлення порядку з localStorage
+    const savedOrder = localStorage.getItem(CARD_ORDER_KEY);
+    if (savedOrder) {
+        try {
+            const orderArray = JSON.parse(savedOrder);
+
+            stations.sort((a, b) => {
+                const idxA = orderArray.indexOf(a);
+                const idxB = orderArray.indexOf(b);
+                if (idxA === -1 && idxB === -1) return a.localeCompare(b);
+                if (idxA === -1) return 1;
+                if (idxB === -1) return -1;
+                return idxA - idxB;
+            });
+        } catch (e) {
+            console.warn('Failed to parse card order from localStorage');
+        }
+    }
 
     stations.forEach((st, idx) => {
         const card = document.createElement('div');
         card.className = 'card';
+        card.dataset.station = st;
+        card.style.animationDelay = `${idx * 0.1}s`; // Анімація по черзі
+        
+        const lastDiff = getLastAvgDiff(st);
+        if (lastDiff >= 10) {
+            card.classList.add('warning-10');
+        } else if (lastDiff >= 5) {
+            card.classList.add('warning-5');
+        }
+        
         card.innerHTML = `
             <div class="card-header">
                 <span class="card-title">${st}</span>
@@ -280,6 +333,63 @@ function initDashboard() {
         `;
         container.appendChild(card);
         createMiniChart(st, `miniChart-${idx}`, 'diff');
+    });
+    
+    // Ініціалізація Drag & Drop
+    initDragDrop();
+    
+    // Оновлення лічильника алертів
+    updateAlertsBadge();
+    
+    // Заповнення селектів станцій для модалок
+    populateStationSelects();
+}
+
+function getLastAvgDiff(stationName) {
+    const timeMap = {};
+    Object.values(allData[stationName].inverters).forEach(invList => {
+        invList.forEach(pt => {
+            const t = pt.timestamp.getTime();
+            if (!timeMap[t]) timeMap[t] = [];
+            timeMap[t].push(pt.diff);
+        });
+    });
+    const times = Object.keys(timeMap).sort();
+    if (times.length === 0) return 0;
+    const lastTime = times[times.length - 1];
+    const vals = timeMap[lastTime];
+    return vals.reduce((a, b) => a + b, 0) / vals.length;
+}
+
+function initDragDrop() {
+    const container = document.getElementById('dashboardGrid');
+    if (sortableInstance) sortableInstance.destroy();
+    
+    sortableInstance = new Sortable(container, {
+        animation: 300,
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        dragClass: 'sortable-drag',
+        handle: '.card-header',
+        onEnd: function() {
+            // Збереження нового порядку
+            const cards = container.querySelectorAll('.card');
+            const order = Array.from(cards).map(c => c.dataset.station);
+            localStorage.setItem(CARD_ORDER_KEY, JSON.stringify(order));
+        }
+    });
+}
+
+function populateStationSelects() {
+    const stations = Object.keys(allData).sort();
+    const statsSelect = document.getElementById('statsStationSelect');
+    const alertsSelect = document.getElementById('alertsStationSelect');
+    
+    [statsSelect, alertsSelect].forEach(select => {
+        select.innerHTML = '<option value="">-- Оберіть станцію --</option>';
+        stations.forEach(st => {
+            select.innerHTML += `<option value="${st}">${st}</option>`;
+        });
     });
 }
 
@@ -426,20 +536,17 @@ function updateDetailChart() {
     });
 }
 
-// --- LAST UPDATED TIME LOGIC ---
 
 function updateLastUpdatedTime(fileList) {
     let maxDate = 0;
     let maxDateStr = '';
 
     fileList.forEach(filename => {
-        // Regex to parse: 1. Моніторинг Раків - 18.11.2025 12_58.csv
         const match = filename.match(/(\d{2})\.(\d{2})\.(\d{4})\s+(\d{2})_(\d{2})/);
         if (match) {
             const d = new Date(match[3], match[2] - 1, match[1], match[4], match[5]);
             if (d.getTime() > maxDate) {
                 maxDate = d.getTime();
-                // Format for display: 18.11.2025 12:58
                 maxDateStr = `${match[1]}.${match[2]}.${match[3]} ${match[4]}:${match[5]}`;
             }
         }
@@ -453,4 +560,186 @@ function updateLastUpdatedTime(fileList) {
             badge.style.display = 'flex';
         }
     }
+}
+
+// --- STATISTICS LOGIC ---
+
+function openStatsModal() {
+    document.getElementById('statsModal').style.display = 'flex';
+    updateOverallStats();
+}
+
+function updateOverallStats() {
+    const container = document.getElementById('overallStats');
+    let totalPoints = 0;
+    let totalDiff = 0;
+    let maxDiff = 0;
+    let alerts5 = 0;
+    let alerts10 = 0;
+    let stationCount = Object.keys(allData).length;
+    let inverterCount = 0;
+    
+    Object.values(allData).forEach(station => {
+        Object.values(station.inverters).forEach(invData => {
+            inverterCount++;
+            invData.forEach(pt => {
+                totalPoints++;
+                totalDiff += pt.diff;
+                if (pt.diff > maxDiff) maxDiff = pt.diff;
+                if (pt.diff >= 10) alerts10++;
+                else if (pt.diff >= 5) alerts5++;
+            });
+        });
+    });
+    
+    const avgDiff = totalPoints > 0 ? (totalDiff / totalPoints).toFixed(2) : 0;
+    
+    container.innerHTML = `
+        <div class="stat-card">
+            <div class="stat-value">${stationCount}</div>
+            <div class="stat-label">Станцій</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">${inverterCount}</div>
+            <div class="stat-label">Інверторів</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">${totalPoints}</div>
+            <div class="stat-label">Точок даних</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">${avgDiff}%</div>
+            <div class="stat-label">Середня різниця</div>
+        </div>
+        <div class="stat-card ${maxDiff >= 10 ? 'danger' : maxDiff >= 5 ? 'warning' : ''}">
+            <div class="stat-value">${maxDiff.toFixed(1)}%</div>
+            <div class="stat-label">Максимальна різниця</div>
+        </div>
+        <div class="stat-card warning">
+            <div class="stat-value">${alerts5}</div>
+            <div class="stat-label">Алертів ≥5%</div>
+        </div>
+        <div class="stat-card danger">
+            <div class="stat-value">${alerts10}</div>
+            <div class="stat-label">Алертів ≥10%</div>
+        </div>
+    `;
+}
+
+function updateStationStats() {
+    const container = document.getElementById('stationStats');
+    const stationName = document.getElementById('statsStationSelect').value;
+    
+    if (!stationName || !allData[stationName]) {
+        container.innerHTML = '<p style="opacity:0.6;">Оберіть станцію для перегляду статистики</p>';
+        return;
+    }
+    
+    const station = allData[stationName];
+    const inverters = Object.keys(station.inverters);
+    let html = '';
+    
+    inverters.forEach(inv => {
+        const data = station.inverters[inv];
+        const diffs = data.map(d => d.diff);
+        const avgDiff = (diffs.reduce((a, b) => a + b, 0) / diffs.length).toFixed(2);
+        const maxDiff = Math.max(...diffs).toFixed(1);
+        const minDiff = Math.min(...diffs).toFixed(1);
+        const alerts5 = diffs.filter(d => d >= 5 && d < 10).length;
+        const alerts10 = diffs.filter(d => d >= 10).length;
+        
+        const alertClass = maxDiff >= 10 ? 'danger' : maxDiff >= 5 ? 'warning' : '';
+        
+        html += `
+            <div class="stat-card ${alertClass}">
+                <div class="stat-value">${inv}</div>
+                <div class="stat-label">
+                    Сер: ${avgDiff}% | Макс: ${maxDiff}%<br>
+                    <small>≥5%: ${alerts5} | ≥10%: ${alerts10}</small>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+// --- ALERTS LOGIC ---
+
+function openAlertsModal() {
+    document.getElementById('alertsModal').style.display = 'flex';
+    updateAlertsList();
+}
+
+function updateAlertsBadge() {
+    let count = 0;
+    Object.values(allData).forEach(station => {
+        Object.values(station.inverters).forEach(invData => {
+            invData.forEach(pt => {
+                if (pt.diff >= 5) count++;
+            });
+        });
+    });
+    
+    const badge = document.getElementById('alertsBadge');
+    if (count > 0) {
+        badge.style.display = 'block';
+        badge.innerText = count > 99 ? '99+' : count;
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+function updateAlertsList() {
+    const container = document.getElementById('alertsList');
+    const threshold = parseInt(document.getElementById('alertsThreshold').value);
+    const activeTab = document.querySelector('.alert-tab.active').dataset.tab;
+    const selectedStation = document.getElementById('alertsStationSelect').value;
+    
+    let alerts = [];
+    
+    Object.entries(allData).forEach(([stationName, station]) => {
+        if (activeTab === 'station' && selectedStation && stationName !== selectedStation) return;
+        
+        Object.entries(station.inverters).forEach(([invName, invData]) => {
+            invData.forEach(pt => {
+                if (pt.diff >= threshold) {
+                    alerts.push({
+                        station: stationName,
+                        inverter: invName,
+                        diff: pt.diff,
+                        timestamp: pt.timestamp,
+                        level: pt.diff >= 10 ? 10 : 5
+                    });
+                }
+            });
+        });
+    });
+    
+    // Сортуємо за датою (новіші спочатку)
+    alerts.sort((a, b) => b.timestamp - a.timestamp);
+    
+    if (alerts.length === 0) {
+        container.innerHTML = `<div class="no-alerts"><i class="fas fa-check-circle" style="font-size:2rem;color:var(--accent-blue);"></i><p>Алертів не знайдено</p></div>`;
+        return;
+    }
+    
+    let html = '';
+    alerts.forEach(alert => {
+        const dateStr = alert.timestamp.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const timeStr = alert.timestamp.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+        
+        html += `
+            <div class="alert-item level-${alert.level}">
+                <div class="alert-info">
+                    <span class="alert-station">${alert.station}</span>
+                    <span class="alert-inverter">Інвертор: ${alert.inverter}</span>
+                </div>
+                <div class="alert-value">${alert.diff.toFixed(1)}%</div>
+                <div class="alert-time">${dateStr} ${timeStr}</div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
 }

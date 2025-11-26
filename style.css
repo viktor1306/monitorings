@@ -7,6 +7,9 @@
     --color-diff: #ff9f43;
     --color-min: #ff5252;
     --color-max: #00d2d3;
+    --warning-yellow: #ffc107;
+    --danger-orange: #ff9800;
+    --danger-red: #f44336;
 }
 
 body {
@@ -18,7 +21,6 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* HEADER */
 .header-bar {
     background: var(--card-bg);
     padding: 15px 25px;
@@ -50,6 +52,40 @@ body {
     display: flex;
     align-items: center;
     gap: 15px;
+}
+
+/* Header Buttons */
+.header-btn {
+    background: transparent;
+    border: 1px solid var(--accent-blue);
+    color: var(--accent-blue);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.header-btn:hover {
+    background: var(--accent-blue);
+    color: #ffffff;
+}
+
+.alerts-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: var(--danger-red);
+    color: white;
+    font-size: 0.65rem;
+    padding: 2px 5px;
+    border-radius: 10px;
+    font-weight: bold;
 }
 
 .color-picker-dropdown {
@@ -135,7 +171,6 @@ body {
     color: #ffffff;
 }
 
-/* GRID SYSTEM */
 .grid-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
@@ -150,13 +185,51 @@ body {
     border: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+    opacity: 0;
+    animation: cardFadeIn 0.5s ease forwards;
 }
 
 .card:hover {
     transform: translateY(-5px);
     box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
     border-color: var(--accent-blue);
+}
+
+/* Warning states for diff values */
+.card.warning-5 {
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255, 193, 7, 0.15) 100%);
+    border-color: var(--warning-yellow);
+}
+
+.card.warning-10 {
+    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255, 152, 0, 0.2) 100%);
+    border-color: var(--danger-orange);
+}
+
+/* Drag & Drop styles */
+.card.sortable-ghost {
+    opacity: 0.4;
+}
+
+.card.sortable-chosen {
+    cursor: grabbing;
+}
+
+.card.sortable-drag {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Card fade-in animation */
+@keyframes cardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .card-header {
@@ -225,7 +298,6 @@ body {
     padding: 8px;
 }
 
-/* MODAL */
 .modal {
     display: none;
     position: fixed;
@@ -308,6 +380,186 @@ body {
     font-size: 0.8rem;
     color: var(--text-color);
     opacity: 0.7;
+}
+
+
+.stats-modal-content {
+    max-width: 900px;
+    height: auto;
+    max-height: 85%;
+    overflow-y: auto;
+}
+
+.stats-content {
+    padding: 20px 0;
+}
+
+.stats-section {
+    margin-bottom: 30px;
+}
+
+.stats-section h3 {
+    margin: 0 0 15px 0;
+    color: var(--accent-blue);
+    font-size: 1.1rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.stat-card {
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+}
+
+.stat-card .stat-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--accent-blue);
+}
+
+.stat-card .stat-label {
+    font-size: 0.85rem;
+    color: var(--text-color);
+    opacity: 0.8;
+    margin-top: 5px;
+}
+
+.stat-card.warning {
+    border-color: var(--warning-yellow);
+}
+
+.stat-card.warning .stat-value {
+    color: var(--warning-yellow);
+}
+
+.stat-card.danger {
+    border-color: var(--danger-orange);
+}
+
+.stat-card.danger .stat-value {
+    color: var(--danger-orange);
+}
+
+/* ALERTS MODAL */
+.alerts-modal-content {
+    max-width: 800px;
+    height: auto;
+    max-height: 85%;
+}
+
+.alerts-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px 0;
+    overflow: hidden;
+}
+
+.alerts-tabs {
+    display: flex;
+    gap: 10px;
+}
+
+.alert-tab {
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.alert-tab:hover,
+.alert-tab.active {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: white;
+}
+
+.alerts-filters {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.alerts-list {
+    max-height: 400px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.alert-item {
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.alert-item.level-5 {
+    border-left: 4px solid var(--warning-yellow);
+}
+
+.alert-item.level-10 {
+    border-left: 4px solid var(--danger-orange);
+}
+
+.alert-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.alert-station {
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.alert-inverter {
+    font-size: 0.85rem;
+    color: var(--text-color);
+    opacity: 0.7;
+}
+
+.alert-value {
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 5px 12px;
+    border-radius: 15px;
+    background: rgba(255, 193, 7, 0.2);
+    color: var(--warning-yellow);
+}
+
+.alert-item.level-10 .alert-value {
+    background: rgba(255, 152, 0, 0.2);
+    color: var(--danger-orange);
+}
+
+.alert-time {
+    font-size: 0.8rem;
+    color: var(--text-color);
+    opacity: 0.6;
+}
+
+.no-alerts {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-color);
+    opacity: 0.6;
 }
 
 /* MOBILE RESPONSIVE */
