@@ -208,16 +208,24 @@ body {
 }
 
 /* Drag & Drop styles */
+.card {
+    cursor: grab;
+}
+
 .card.sortable-ghost {
     opacity: 0.4;
+    transform: scale(0.95);
 }
 
 .card.sortable-chosen {
     cursor: grabbing;
+    transform: scale(1.02);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
 }
 
 .card.sortable-drag {
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+    transform: rotate(2deg);
 }
 
 /* Card fade-in animation */
@@ -388,6 +396,12 @@ body {
     height: auto;
     max-height: 85%;
     overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.stats-modal-content::-webkit-scrollbar {
+    display: none;
 }
 
 .stats-content {
@@ -445,6 +459,62 @@ body {
 
 .stat-card.danger .stat-value {
     color: var(--danger-orange);
+}
+
+/* Date filter styles */
+.stats-date-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.stats-date-filter label {
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.date-input {
+    background: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.date-input:hover,
+.date-input:focus {
+    border-color: var(--accent-blue);
+}
+
+.btn-apply-date,
+.btn-reset-date {
+    background: var(--accent-blue);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.btn-reset-date {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+.btn-apply-date:hover {
+    background: #1565c0;
+}
+
+.btn-reset-date:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
 }
 
 /* ALERTS MODAL */

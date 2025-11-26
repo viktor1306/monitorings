@@ -171,6 +171,16 @@ function initModals() {
     document.getElementById('statsBtn').addEventListener('click', openStatsModal);
     document.querySelector('.close-stats').addEventListener('click', () => document.getElementById('statsModal').style.display = 'none');
     document.getElementById('statsStationSelect').addEventListener('change', updateStationStats);
+    document.getElementById('statsApplyDate').addEventListener('click', () => {
+        updateOverallStats();
+        updateStationStats();
+    });
+    document.getElementById('statsResetDate').addEventListener('click', () => {
+        document.getElementById('statsDateFrom').value = '';
+        document.getElementById('statsDateTo').value = '';
+        updateOverallStats();
+        updateStationStats();
+    });
     
     // Alerts Modal
     document.getElementById('alertsBtn').addEventListener('click', openAlertsModal);
@@ -338,9 +348,6 @@ function initDashboard() {
     // Ініціалізація Drag & Drop
     initDragDrop();
     
-    // Оновлення лічильника алертів
-    updateAlertsBadge();
-    
     // Заповнення селектів станцій для модалок
     populateStationSelects();
 }
@@ -366,11 +373,13 @@ function initDragDrop() {
     if (sortableInstance) sortableInstance.destroy();
     
     sortableInstance = new Sortable(container, {
-        animation: 300,
+        animation: 350,
+        easing: 'cubic-bezier(0.25, 1, 0.5, 1)',
         ghostClass: 'sortable-ghost',
         chosenClass: 'sortable-chosen',
         dragClass: 'sortable-drag',
-        handle: '.card-header',
+        filter: '.btn-details, .card-select, canvas',
+        preventOnFilter: true,
         onEnd: function() {
             // Збереження нового порядку
             const cards = container.querySelectorAll('.card');
@@ -569,11 +578,27 @@ function openStatsModal() {
     updateOverallStats();
 }
 
+function getDateFilter() {
+    const fromStr = document.getElementById('statsDateFrom').value;
+    const toStr = document.getElementById('statsDateTo').value;
+    const from = fromStr ? new Date(fromStr) : null;
+    const to = toStr ? new Date(toStr + 'T23:59:59') : null;
+    return { from, to };
+}
+
+function isInDateRange(timestamp, filter) {
+    if (!filter.from && !filter.to) return true;
+    const date = new Date(timestamp);
+    if (filter.from && date < filter.from) return false;
+    if (filter.to && date > filter.to) return false;
+    return true;
+}
+
 function updateOverallStats() {
     const container = document.getElementById('overallStats');
+    const dateFilter = getDateFilter();
     let totalPoints = 0;
     let totalDiff = 0;
-    let maxDiff = 0;
     let alerts5 = 0;
     let alerts10 = 0;
     let stationCount = Object.keys(allData).length;
@@ -583,9 +608,9 @@ function updateOverallStats() {
         Object.values(station.inverters).forEach(invData => {
             inverterCount++;
             invData.forEach(pt => {
+                if (!isInDateRange(pt.timestamp, dateFilter)) return;
                 totalPoints++;
                 totalDiff += pt.diff;
-                if (pt.diff > maxDiff) maxDiff = pt.diff;
                 if (pt.diff >= 10) alerts10++;
                 else if (pt.diff >= 5) alerts5++;
             });
@@ -604,16 +629,8 @@ function updateOverallStats() {
             <div class="stat-label">Інверторів</div>
         </div>
         <div class="stat-card">
-            <div class="stat-value">${totalPoints}</div>
-            <div class="stat-label">Точок даних</div>
-        </div>
-        <div class="stat-card">
             <div class="stat-value">${avgDiff}%</div>
             <div class="stat-label">Середня різниця</div>
-        </div>
-        <div class="stat-card ${maxDiff >= 10 ? 'danger' : maxDiff >= 5 ? 'warning' : ''}">
-            <div class="stat-value">${maxDiff.toFixed(1)}%</div>
-            <div class="stat-label">Максимальна різниця</div>
         </div>
         <div class="stat-card warning">
             <div class="stat-value">${alerts5}</div>
@@ -629,6 +646,7 @@ function updateOverallStats() {
 function updateStationStats() {
     const container = document.getElementById('stationStats');
     const stationName = document.getElementById('statsStationSelect').value;
+    const dateFilter = getDateFilter();
     
     if (!stationName || !allData[stationName]) {
         container.innerHTML = '<p style="opacity:0.6;">Оберіть станцію для перегляду статистики</p>';
@@ -640,11 +658,11 @@ function updateStationStats() {
     let html = '';
     
     inverters.forEach(inv => {
-        const data = station.inverters[inv];
+        const data = station.inverters[inv].filter(pt => isInDateRange(pt.timestamp, dateFilter));
+        if (data.length === 0) return;
         const diffs = data.map(d => d.diff);
         const avgDiff = (diffs.reduce((a, b) => a + b, 0) / diffs.length).toFixed(2);
         const maxDiff = Math.max(...diffs).toFixed(1);
-        const minDiff = Math.min(...diffs).toFixed(1);
         const alerts5 = diffs.filter(d => d >= 5 && d < 10).length;
         const alerts10 = diffs.filter(d => d >= 10).length;
         
@@ -661,7 +679,7 @@ function updateStationStats() {
         `;
     });
     
-    container.innerHTML = html;
+    container.innerHTML = html || '<p style="opacity:0.6;">Немає даних за вибраний період</p>';
 }
 
 // --- ALERTS LOGIC ---
@@ -671,24 +689,7 @@ function openAlertsModal() {
     updateAlertsList();
 }
 
-function updateAlertsBadge() {
-    let count = 0;
-    Object.values(allData).forEach(station => {
-        Object.values(station.inverters).forEach(invData => {
-            invData.forEach(pt => {
-                if (pt.diff >= 5) count++;
-            });
-        });
-    });
-    
-    const badge = document.getElementById('alertsBadge');
-    if (count > 0) {
-        badge.style.display = 'block';
-        badge.innerText = count > 99 ? '99+' : count;
-    } else {
-        badge.style.display = 'none';
-    }
-}
+
 
 function updateAlertsList() {
     const container = document.getElementById('alertsList');
@@ -716,7 +717,6 @@ function updateAlertsList() {
         });
     });
     
-    // Сортуємо за датою (новіші спочатку)
     alerts.sort((a, b) => b.timestamp - a.timestamp);
     
     if (alerts.length === 0) {

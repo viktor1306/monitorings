@@ -34,7 +34,6 @@
             </button>
             <button id="alertsBtn" class="header-btn" title="Історія алертів">
                 <i class="fas fa-bell"></i>
-                <span id="alertsBadge" class="alerts-badge" style="display:none;">0</span>
             </button>
             <div id="loadingStatus" class="loading-spinner">
                 <i class="fas fa-spinner fa-spin"></i> Завантаження даних...
@@ -97,7 +96,15 @@
             </div>
             <div class="stats-content">
                 <div class="stats-section">
-                    <h3>Загальна статистика за весь період</h3>
+                    <h3>Загальна статистика</h3>
+                    <div class="stats-date-filter">
+                        <label>Період:</label>
+                        <input type="date" id="statsDateFrom" class="date-input">
+                        <span>—</span>
+                        <input type="date" id="statsDateTo" class="date-input">
+                        <button id="statsApplyDate" class="btn-apply-date">Застосувати</button>
+                        <button id="statsResetDate" class="btn-reset-date">Скинути</button>
+                    </div>
                     <div id="overallStats" class="stats-grid"></div>
                 </div>
                 <div class="stats-section">
