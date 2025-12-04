@@ -1,0 +1,195 @@
+Станція,Назва інвертора,Статус,SoC 1,SoC 2,SoC 3,SoC 4,SoC 5,SoC 6,,,Макс,Мін,різниця
+УЗЕ Бар БЕСС,1.1,✓ OK,"82,5","82,1","82,5","82,1","82,5",,,,"82,5","82,1","0,4"
+УЗЕ Бар БЕСС,1.2,✓ OK,"87,6","87,2","87,5","87,2","87,6",,,,"87,6","87,2","0,4"
+УЗЕ Бар БЕСС,2.1,✓ OK,"82,1","82,1","82,1","82,1","82,1",,,,"82,1","82,1",0
+УЗЕ Бар БЕСС,2.2,✓ OK,"82,5","82,5","82,1","82,1","82,5",,,,"82,5","82,1","0,4"
+УЗЕ Бар БЕСС,3.1,✓ OK,"82,2",82,"82,6","82,2","82,7",,,,"82,7",82,"0,7"
+УЗЕ Бар БЕСС,3.2,❌ ERROR,N/A
+УЗЕ Бар БЕСС,4.1,❌ ERROR,N/A
+УЗЕ Бар БЕСС,4.2,❌ ERROR,N/A
+УЗЕ Бар БЕСС,5.1,❌ ERROR,N/A
+УЗЕ Бар БЕСС,5.2,❌ ERROR,N/A
+УЗЕ Бар БЕСС,6.1,❌ ERROR,N/A
+УЗЕ Бар БЕСС,6.2,❌ ERROR,N/A
+УЗЕ Бар БЕСС,7.1,❌ ERROR,N/A
+УЗЕ Бар БЕСС,7.2,❌ ERROR,N/A
+УЗЕ Бар БЕСС,8.1,❌ ERROR,N/A
+УЗЕ Бар БЕСС,8.2,❌ ERROR,N/A
+УЗЕ Бар БЕСС,9.1,❌ ERROR,N/A
+УЗЕ Бар БЕСС,9.2,❌ ERROR,N/A
+УЗЕ Бар БЕСС,10.1,❌ ERROR,N/A
+УЗЕ Бар БЕСС,10.2,❌ ERROR,N/A
+УЗЕ Бар БЕСС,11.1,❌ ERROR,N/A
+УЗЕ Бар БЕСС,11.2,❌ ERROR,N/A
+УЗЕ Бар БЕСС,12.1,❌ ERROR,N/A
+УЗЕ Бар БЕСС,12.2,❌ ERROR,N/A
+УЗЕ Бар БЕСС,13.1,❌ ERROR,N/A
+УЗЕ Бар БЕСС,13.2,❌ ERROR,N/A
+
+
+УЗЕ Драбівська БЕСС,PCS-1.1,✓ OK,84,87,85,"83,5","84,5",,,,87,"83,5","3,5"
+УЗЕ Драбівська БЕСС,PCS-1.2,✓ OK,85,"86,6","82,5","84,7","84,6",,,,"86,6","82,5","4,1"
+УЗЕ Драбівська БЕСС,PCS-2.1,❌ ERROR,N/A
+УЗЕ Драбівська БЕСС,PCS-2.2,❌ ERROR,N/A
+УЗЕ Драбівська БЕСС,PCS-3.1,❌ ERROR,N/A
+УЗЕ Драбівська БЕСС,PCS-3.2,❌ ERROR,N/A
+
+
+УЗЕ Знаменська БЕСС,"ПОМИЛКА: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=142.0.7444.176)
+Stacktrace:
+Symbols not available. Dumping unresolved backtrace:
+	0x754103
+	0x754144
+	0x55e71d
+	0x53c32d
+	0x5d329e
+	0x5ee749
+	0x5cc706
+	0x59da30
+	0x59ed54
+	0x9c57b4
+	0x9c098a
+	0x77c392
+	0x76c4c8
+	0x77324d
+	0x75c478
+	0x75c63c
+	0x7467ca
+	0x74d05d49
+	0x772bd6db
+	0x772bd661
+"
+УЗЕ Зорянська БЕСС,"ПОМИЛКА: Помилка ініціалізації: Помилка Cloudflare авторизації: Помилка Cloudflare авторизації: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=142.0.7444.176)
+Stacktrace:
+Symbols not available. Dumping unresolved backtrace:
+	0x754103
+	0x754144
+	0x55e71d
+	0x53c32d
+	0x5d329e
+	0x5ee749
+	0x5cc706
+	0x59da30
+	0x59ed54
+	0x9c57b4
+	0x9c098a
+	0x77c392
+	0x76c4c8
+	0x77324d
+	0x75c478
+	0x75c63c
+	0x7467ca
+	0x74d05d49
+	0x772bd6db
+	0x772bd661
+"
+УЗЕ Новомиргородська БЕСС,"ПОМИЛКА: Помилка ініціалізації: Помилка Cloudflare авторизації: Помилка Cloudflare авторизації: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=142.0.7444.176)
+Stacktrace:
+Symbols not available. Dumping unresolved backtrace:
+	0x754103
+	0x754144
+	0x55e71d
+	0x53c32d
+	0x5d329e
+	0x5ee749
+	0x5cc706
+	0x59da30
+	0x59ed54
+	0x9c57b4
+	0x9c098a
+	0x77c392
+	0x76c4c8
+	0x77324d
+	0x75c478
+	0x75c63c
+	0x7467ca
+	0x74d05d49
+	0x772bd6db
+	0x772bd661
+"
+УЗЕ Олександрійська БЕСС,"ПОМИЛКА: Помилка ініціалізації: Помилка Cloudflare авторизації: Помилка Cloudflare авторизації: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: not connected to DevTools
+  (Session info: chrome=142.0.7444.176); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+Symbols not available. Dumping unresolved backtrace:
+	0x754103
+	0x754144
+	0x55e71d
+	0x54d910
+	0x56c714
+	0x5d3475
+	0x5ee749
+	0x5cc706
+	0x59da30
+	0x59ed54
+	0x9c57b4
+	0x9c098a
+	0x77c392
+	0x76c4c8
+	0x77324d
+	0x75c478
+	0x75c63c
+	0x7467ca
+	0x74d05d49
+	0x772bd6db
+	0x772bd661
+"
+УЗЕ Салгани БЕСС,"ПОМИЛКА: Помилка ініціалізації: Помилка Cloudflare авторизації: Помилка Cloudflare авторизації: Message: invalid session id: session deleted as the browser has closed the connection
+from disconnected: not connected to DevTools
+  (Session info: chrome=142.0.7444.176); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception
+Stacktrace:
+Symbols not available. Dumping unresolved backtrace:
+	0x754103
+	0x754144
+	0x55e71d
+	0x54d910
+	0x56c714
+	0x5d3475
+	0x5ee749
+	0x5cc706
+	0x59da30
+	0x59ed54
+	0x9c57b4
+	0x9c098a
+	0x77c392
+	0x76c4c8
+	0x77324d
+	0x75c478
+	0x75c63c
+	0x7467ca
+	0x74d05d49
+	0x772bd6db
+	0x772bd661
+"
+УЗЕ Смолінська БЕСС,"ПОМИЛКА: Помилка ініціалізації: Помилка Cloudflare авторизації: Помилка Cloudflare авторизації: Message: no such window: target window already closed
+from unknown error: web view not found
+  (Session info: chrome=142.0.7444.176)
+Stacktrace:
+Symbols not available. Dumping unresolved backtrace:
+	0x754103
+	0x754144
+	0x55e71d
+	0x53c32d
+	0x5d329e
+	0x5ee749
+	0x5cc706
+	0x59da30
+	0x59ed54
+	0x9c57b4
+	0x9c098a
+	0x77c392
+	0x76c4c8
+	0x77324d
+	0x75c478
+	0x75c63c
+	0x7467ca
+	0x74d05d49
+	0x772bd6db
+	0x772bd661
+"
